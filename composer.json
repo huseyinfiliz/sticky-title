@@ -1,0 +1,73 @@
+{
+    "name": "huseyinfiliz/sticky-title",
+    "description": "StickyTitle keeps discussion titles always visible while scrolling in Flarum.",
+    "keywords": [
+        "flarum",
+        "discussion",
+        "title",
+        "sticky",
+        "navigation",
+        "scroll",
+        "header"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^1.8"
+    },
+    "authors": [
+        {
+            "name": "Hüseyin Filiz",
+            "email": "mysuperuser01@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "homepage": "https://huseyinfiliz.com.tr/sosyal",
+    "support": {
+        "forum": "https://discuss.flarum.org/d/YOUR_DISCUSSION_ID",
+        "issues": "https://github.com/huseyinfiliz/sticky-title/issues",
+        "source": "https://github.com/huseyinfiliz/sticky-title",
+        "docs": "https://github.com/huseyinfiliz/sticky-title/README.md"
+    },
+    "autoload": {
+        "psr-4": {
+            "HuseyinFiliz\\StickyTitle\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Sticky Title",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-thumbtack",
+                "color": "#ffffff",
+                "backgroundColor": "#3498db"
+            }
+        },
+        "flagrow": {
+            "discuss": "https://discuss.flarum.org/d/YOUR_DISCUSSION_ID"
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": false,
+                "css": true,
+                "locale": true,
+                "gitConf": true,
+                "githubActions": false,
+                "prettier": true,
+                "typescript": true,
+                "bundlewatch": false,
+                "frontendTesting": false,
+                "backendTesting": false,
+                "phpstan": false,
+                "editorConfig": true,
+                "styleci": false
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

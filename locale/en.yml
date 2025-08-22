@@ -1,0 +1,28 @@
+huseyinfiliz-sticky-title:
+  # Admin settings
+  admin:
+    settings:
+      title: Sticky Title Settings
+      
+      # Mobile settings
+      mobile_section_title: Mobile Settings
+      mobile_scroll_label: Mobile Discussion Title Display
+      mobile_scroll_help: Choose when to show the discussion title in the mobile header
+      mobile_scroll_options:
+        always: Always Show
+        scroll_down: Show When Scrolling Down
+        scroll_up: Show When Scrolling Up
+        never: Never Show
+      
+      # Scrubber settings
+      scrubber_section_title: Scrubber Settings
+      scrubber_replace_now_label: Replace "Now" with Discussion Title
+      scrubber_replace_now_help: Shows the discussion title instead of "Now" text in the scrubber
+      
+      # Web/Desktop settings
+      web_section_title: Desktop Settings
+      web_scrubber_title_label: Show Title Above Scrubber
+      web_scrubber_title_help: Displays the discussion title above the scrubber on desktop
+      
+      # Save button
+      save_settings: Save Settings
