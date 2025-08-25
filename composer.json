@@ -24,7 +24,7 @@
     ],
     "homepage": "https://huseyinfiliz.com.tr/sosyal",
     "support": {
-        "forum": "https://discuss.flarum.org/d/YOUR_DISCUSSION_ID",
+        "forum": "https://discuss.flarum.org/d/37973-sticky-title-extension/",
         "issues": "https://github.com/huseyinfiliz/sticky-title/issues",
         "source": "https://github.com/huseyinfiliz/sticky-title",
         "docs": "https://github.com/huseyinfiliz/sticky-title/README.md"
@@ -45,7 +45,7 @@
             }
         },
         "flagrow": {
-            "discuss": "https://discuss.flarum.org/d/YOUR_DISCUSSION_ID"
+            "discuss": "https://discuss.flarum.org/d/37973-sticky-title-extension/"
         },
         "flarum-cli": {
             "modules": {
