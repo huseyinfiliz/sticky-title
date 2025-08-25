@@ -1,4 +1,34 @@
-.PostStreamScrubber {
+// FoF Pages mobil başlık - Tartışma başlığı gibi tasarım
+@media @phone {
+  #app-navigation .Navigation {
+    position: relative;
+    
+    .PageTitle.Navigation-title {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      top: auto;
+      width: 85%;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 46px;
+      padding: 0 15px;
+      z-index: 1000;
+      pointer-events: none;
+      color: var(--header-color);
+    }
+    
+    // Back button'u sola yasla
+    .Navigation-back {
+      position: relative;
+      z-index: 1001;
+    }
+  }
+}.PostStreamScrubber {
   position: relative;
   
   .Scrubber-first {
@@ -15,7 +45,7 @@
     }
   }
   
-  // Mobil header'daki başlık
+  // Mobil header'daki başlık - Daha geniş görünüm
   @media @phone {
     .Dropdown-toggle {
       position: relative;
@@ -30,11 +60,11 @@
       }
       
       .MobileStickyTitle {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        top: auto;
+        width: 85%;
         text-align: center;
         white-space: nowrap;
         overflow: hidden;
@@ -42,6 +72,7 @@
         opacity: 0;
         pointer-events: none;
         padding: 0 15px;
+        z-index: 1000;
       }
     }
     
@@ -112,8 +143,7 @@
       border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
-      color: #fff;
-      background-color: @muted-color;
+      transition: all 0.2s ease;
       
       &--child {
         font-size: 10px;
@@ -127,6 +157,38 @@
       
       &-text {
         line-height: 1.3;
+      }
+    }
+    
+    // Tag renk stilleri
+    &.tag-style-background {
+      .TagLabel {
+        // Varsayılan - arka plan renkli
+        color: #fff;
+      }
+    }
+    
+    &.tag-style-text {
+      .TagLabel {
+        // Sadece metin renkli
+        background-color: transparent !important;
+        font-weight: 700;
+        
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+    
+    &.tag-style-border {
+      .TagLabel {
+        // Sadece border renkli
+        background-color: transparent !important;
+        font-weight: 600;
+        
+        &:hover {
+          background-color: rgba(0,0,0,0.05) !important;
+        }
       }
     }
   }

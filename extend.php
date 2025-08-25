@@ -28,11 +28,19 @@ return [
         ->default('huseyinfiliz-sticky-title.mobile_scroll_direction', 'always')
         ->serializeToForum('stickyTitleMobileScroll', 'huseyinfiliz-sticky-title.mobile_scroll_direction')
         
-        // Scrubber'da "Now" yerine başlık gösterimi - varsayılan: true
-        ->default('huseyinfiliz-sticky-title.scrubber_replace_now', true)
-        ->serializeToForum('stickyTitleScrubberReplace', 'huseyinfiliz-sticky-title.scrubber_replace_now', 'boolval')
+        // Scrubber'da "Original Post" yerine başlık gösterimi - varsayılan: 'both'
+        ->default('huseyinfiliz-sticky-title.scrubber_replace_original', 'both')
+        ->serializeToForum('stickyTitleScrubberReplace', 'huseyinfiliz-sticky-title.scrubber_replace_original')
         
         // Web'de scrubber üstünde başlık gösterimi - varsayılan: true
         ->default('huseyinfiliz-sticky-title.web_scrubber_title', true)
-        ->serializeToForum('stickyTitleWebScrubber', 'huseyinfiliz-sticky-title.web_scrubber_title', 'boolval'),
+        ->serializeToForum('stickyTitleWebScrubber', 'huseyinfiliz-sticky-title.web_scrubber_title', 'boolval')
+        
+        // Tag renk stili - varsayılan: 'background'
+        ->default('huseyinfiliz-sticky-title.tag_color_style', 'background')
+        ->serializeToForum('stickyTitleTagColorStyle', 'huseyinfiliz-sticky-title.tag_color_style')
+        
+        // FoF Pages header başlık - varsayılan: true
+        ->default('huseyinfiliz-sticky-title.fof_pages_header', true)
+        ->serializeToForum('stickyTitleFofPagesHeader', 'huseyinfiliz-sticky-title.fof_pages_header', 'boolval'),
 ];
