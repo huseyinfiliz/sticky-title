@@ -42,5 +42,9 @@ return [
         
         // FoF Pages header başlık - varsayılan: true
         ->default('huseyinfiliz-sticky-title.fof_pages_header', true)
-        ->serializeToForum('stickyTitleFofPagesHeader', 'huseyinfiliz-sticky-title.fof_pages_header', 'boolval'),
+        ->serializeToForum('stickyTitleFofPagesHeader', 'huseyinfiliz-sticky-title.fof_pages_header', 'boolval')
+        
+        // Blog header başlık - varsayılan: true
+        ->default('huseyinfiliz-sticky-title.blog_header', true)
+        ->serializeToForum('stickyTitleBlogHeader', 'huseyinfiliz-sticky-title.blog_header', 'boolval'),
 ];

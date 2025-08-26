@@ -34,5 +34,9 @@ huseyinfiliz-sticky-title:
       fof_pages_header_label: Show Page Title in Mobile Header
       fof_pages_header_help: Displays the page title in mobile header when viewing FoF Pages
       
+      # Blog settings
+      blog_header_label: Show Blog Title in Mobile Header
+      blog_header_help: Displays the blog article title in mobile header when viewing blog posts
+      
       # Save button
       save_settings: Save Settings

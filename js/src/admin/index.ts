@@ -49,5 +49,11 @@ app.initializers.add('huseyinfiliz/sticky-title', function() {
       type: 'boolean',
       label: 'Show Page Title in Mobile Header',
       help: 'Displays the page title in mobile header when viewing FoF Pages'
+    })
+    .registerSetting({
+      setting: 'huseyinfiliz-sticky-title.blog_header',
+      type: 'boolean',
+      label: 'Show Blog Title in Mobile Header',
+      help: 'Displays the blog article title in mobile header when viewing blog posts'
     });
 });
