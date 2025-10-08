@@ -345,11 +345,11 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                       const className = ['TagLabel', tag.isChild() && 'TagLabel--child'].filter(Boolean);
                       const color = tag.color() || '#888';
                       if (tagColorStyle === 'background') {
-                        styleString = `background-color: ${color} !important; color: #fff !important; border: none !important;`;
+                        styleString = `background-color: ${color}; color: #fff; border: none;`;
                       } else if (tagColorStyle === 'text') {
-                        styleString = `color: ${color} !important; background-color: transparent !important; border: 1px solid var(--control-bg) !important;`;
+                        styleString = `color: ${color}; background-color: transparent; border: 1px solid var(--control-bg);`;
                       } else if (tagColorStyle === 'border') {
-                        styleString = `border: 2px solid ${color} !important; color: var(--text-color) !important; background-color: transparent !important;`;
+                        styleString = `border: 2px solid ${color}; color: var(--text-color); background-color: transparent;`;
                       }
                       return m('span.TagLabel', { style: styleString, className: className.join(' ') }, [
                         tag.icon() && m('span.TagLabel-icon', m('i', { className: tag.icon() })),
