@@ -151,6 +151,46 @@
     }
   }
 
+  // FoF Byobu katılımcıları için stil
+  &-recipients {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &-users,
+  &-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .RecipientLabel {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    
+    &-icon {
+      margin-right: 4px;
+      font-size: 10px;
+      opacity: 0.85;
+    }
+    
+    &-text {
+      white-space: nowrap;
+    }
+
+    &:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+  }
+
   &-meta {
     display: flex;
     align-items: center;

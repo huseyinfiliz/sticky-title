@@ -52,19 +52,108 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       }
     };
 
-	extend(PostStream.prototype, 'oncreate', function () {
-  	// Blog header ayarını kontrol et
-  	const blogHeaderEnabled = app.forum && app.forum.attribute ? 
-    	app.forum.attribute('stickyTitleBlogHeader') : true;
-  
-  	if (blogHeaderEnabled && app.current && app.current.get('routeName')?.startsWith('blogArticle')) {
-    	addTitleToHeader(this.attrs.discussion);
-  	}
-	});
+    const cleanupPageTitle = () => {
+      const appNavigation = document.querySelector('#app-navigation .Navigation');
+      if (appNavigation) {
+        const pageTitle = appNavigation.querySelector('.PageTitle.Navigation-title');
+        if (pageTitle) {
+          pageTitle.remove();
+        }
+      }
+    };
+
+    const isFofPage = () => {
+      const currentRoute = app.current?.get?.('routeName');
+      // 'page' route'unu kontrol et (FoF Pages için)
+      return currentRoute === 'page' || currentRoute?.startsWith('page.');
+    };
+
+    const addPageTitle = () => {
+      cleanupPageTitle();
+      
+      const fofPagesEnabled = app.forum?.attribute?.('stickyTitleFofPagesHeader') ?? true;
+      
+      if (!fofPagesEnabled) return;
+      
+      if (!isFofPage()) return;
+      
+      setTimeout(() => {
+        const pageTitle = document.querySelector('.PageHero-title, h1.PageHero-title, .Page-title');
+        const appNavigation = document.querySelector('#app-navigation .Navigation');
+        
+        if (pageTitle && appNavigation && !appNavigation.querySelector('.PageTitle')) {
+          const titleElement = document.createElement('div');
+          titleElement.className = 'PageTitle Navigation-title';
+          titleElement.textContent = pageTitle.textContent.trim();
+          
+          const backButton = appNavigation.querySelector('.Navigation-back');
+          if (backButton && backButton.nextSibling) {
+            backButton.parentNode.insertBefore(titleElement, backButton.nextSibling);
+          } else if (backButton) {
+            appNavigation.appendChild(titleElement);
+          } else {
+            appNavigation.insertBefore(titleElement, appNavigation.firstChild);
+          }
+        }
+      }, 100);
+    };
+
+    extend(PostStream.prototype, 'oncreate', function () {
+      const blogHeaderEnabled = app.forum?.attribute?.('stickyTitleBlogHeader') ?? true;
+      
+      if (blogHeaderEnabled && app.current?.get?.('routeName')?.startsWith('blogArticle')) {
+        addTitleToHeader(this.attrs.discussion);
+      } else {
+        cleanupStickyTitle();
+      }
+      
+      // FoF Pages desteği
+      if (isFofPage()) {
+        addPageTitle();
+      } else {
+        cleanupPageTitle();
+      }
+    });
+
+    extend(PostStream.prototype, 'onupdate', function () {
+      // Route değişikliklerini yakalamak için onupdate kullan
+      if (isFofPage()) {
+        addPageTitle();
+      }
+    });
 
     extend(PostStream.prototype, 'onremove', function () {
       cleanupStickyTitle();
+      cleanupPageTitle();
     });
+
+    // İlk yükleme için
+    setTimeout(() => {
+      if (isFofPage()) {
+        addPageTitle();
+      }
+    }, 100);
+
+    // Route değişikliklerini dinle
+    let lastRoute = app.current?.get?.('routeName');
+    
+    const checkRouteChange = () => {
+      const currentRoute = app.current?.get?.('routeName');
+      
+      if (currentRoute !== lastRoute) {
+        lastRoute = currentRoute;
+        
+        if (isFofPage()) {
+          addPageTitle();
+        } else {
+          cleanupPageTitle();
+        }
+      }
+      
+      requestAnimationFrame(checkRouteChange);
+    };
+    
+    checkRouteChange();
   }
 
   let lastScrollTop = 0;
@@ -183,37 +272,95 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     if (!discussion) return;
 
     const scrollToFirst = () => this.stream && this.stream.goToNumber(1);
-    const tags = discussion.tags();
     const tagColorStyle = app.forum.attribute('stickyTitleTagColorStyle') || 'background';
+
+    // FoF Byobu kontrolü
+    const recipientUsers = discussion.recipientUsers?.() || null;
+    const recipientGroups = discussion.recipientGroups?.() || null;
+    const isByobuDiscussion = (recipientUsers && recipientUsers.length > 0) || (recipientGroups && recipientGroups.length > 0);
+    
+    // Normal tartışmalar için tags
+    const tags = discussion.tags?.() || null;
 
     items.add('sticky-title',
       m('.StickyTitlePanel', [
         m('.StickyTitlePanel-container', { onclick: scrollToFirst, style: 'cursor: pointer;' }, [
           m('.StickyTitlePanel-header', [m('.StickyTitlePanel-label', discussion.title())]),
           m('.StickyTitlePanel-content', [
-            tags && tags.length > 0
-              ? m('.StickyTitlePanel-tags', { className: `tag-style-${tagColorStyle}` },
-                  tags.map(tag => {
-                    let styleString = '';
-                    const className = ['TagLabel', tag.isChild() && 'TagLabel--child'].filter(Boolean);
-                    const color = tag.color() || '#888';
-                    if (tagColorStyle === 'background') {
-                      styleString = `background-color: ${color} !important; color: #fff !important; border: none !important;`;
-                    } else if (tagColorStyle === 'text') {
-                      styleString = `color: ${color} !important; background-color: transparent !important; border: 1px solid var(--control-bg) !important;`;
-                    } else if (tagColorStyle === 'border') {
-                      styleString = `border: 2px solid ${color} !important; color: var(--text-color) !important; background-color: transparent !important;`;
-                    }
-                    return m('span.TagLabel', { style: styleString, className: className.join(' ') }, [
-                      tag.icon() && m('span.TagLabel-icon', m('i', { className: tag.icon() })),
-                      m('span.TagLabel-text', tag.name())
-                    ]);
-                  })
-                )
-              : m('.StickyTitlePanel-meta', [
-                  m('span.StickyTitlePanel-arrow', m('i.fas.fa-arrow-up')),
-                  m('span', app.translator.trans('core.forum.post_scrubber.original_post_link'))
+            isByobuDiscussion
+              ? m('.StickyTitlePanel-recipients', [
+                  recipientUsers && recipientUsers.length > 0
+                    ? m('.StickyTitlePanel-users', 
+                        recipientUsers.map(user => {
+                          const baseColor = '#3498db';
+                          let styleString = '';
+                          
+                          if (tagColorStyle === 'background') {
+                            styleString = `background-color: ${baseColor}; color: #fff; border: none;`;
+                          } else if (tagColorStyle === 'text') {
+                            styleString = `color: ${baseColor}; background-color: transparent; border: 1px solid var(--control-bg);`;
+                          } else if (tagColorStyle === 'border') {
+                            styleString = `border: 2px solid ${baseColor}; color: var(--text-color); background-color: transparent;`;
+                          }
+                          
+                          return m('span.RecipientLabel.RecipientLabel--user', { 
+                            key: user.id(),
+                            style: styleString
+                          }, [
+                            m('i.fas.fa-user.RecipientLabel-icon'),
+                            m('span.RecipientLabel-text', user.displayName())
+                          ]);
+                        })
+                      )
+                    : null,
+                  recipientGroups && recipientGroups.length > 0
+                    ? m('.StickyTitlePanel-groups',
+                        recipientGroups.map(group => {
+                          const baseColor = '#9b59b6';
+                          let styleString = '';
+                          
+                          if (tagColorStyle === 'background') {
+                            styleString = `background-color: ${baseColor}; color: #fff; border: none;`;
+                          } else if (tagColorStyle === 'text') {
+                            styleString = `color: ${baseColor}; background-color: transparent; border: 1px solid var(--control-bg);`;
+                          } else if (tagColorStyle === 'border') {
+                            styleString = `border: 2px solid ${baseColor}; color: var(--text-color); background-color: transparent;`;
+                          }
+                          
+                          return m('span.RecipientLabel.RecipientLabel--group', {
+                            key: group.id(),
+                            style: styleString
+                          }, [
+                            m('i.fas.fa-users.RecipientLabel-icon'),
+                            m('span.RecipientLabel-text', group.namePlural())
+                          ]);
+                        })
+                      )
+                    : null
                 ])
+              : tags && tags.length > 0
+                ? m('.StickyTitlePanel-tags', { className: `tag-style-${tagColorStyle}` },
+                    tags.map(tag => {
+                      let styleString = '';
+                      const className = ['TagLabel', tag.isChild() && 'TagLabel--child'].filter(Boolean);
+                      const color = tag.color() || '#888';
+                      if (tagColorStyle === 'background') {
+                        styleString = `background-color: ${color} !important; color: #fff !important; border: none !important;`;
+                      } else if (tagColorStyle === 'text') {
+                        styleString = `color: ${color} !important; background-color: transparent !important; border: 1px solid var(--control-bg) !important;`;
+                      } else if (tagColorStyle === 'border') {
+                        styleString = `border: 2px solid ${color} !important; color: var(--text-color) !important; background-color: transparent !important;`;
+                      }
+                      return m('span.TagLabel', { style: styleString, className: className.join(' ') }, [
+                        tag.icon() && m('span.TagLabel-icon', m('i', { className: tag.icon() })),
+                        m('span.TagLabel-text', tag.name())
+                      ]);
+                    })
+                  )
+                : m('.StickyTitlePanel-meta', [
+                    m('span.StickyTitlePanel-arrow', m('i.fas.fa-arrow-up')),
+                    m('span', app.translator.trans('core.forum.post_scrubber.original_post_link'))
+                  ])
           ])
         ])
       ]), 1
