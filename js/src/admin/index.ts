@@ -1,5 +1,5 @@
 app.initializers.add('huseyinfiliz/sticky-title', function () {
-  app.extensionData
+  app.registry
     .for('huseyinfiliz-sticky-title')
     .registerSetting({
       setting: 'huseyinfiliz-sticky-title.mobile_scroll_direction',
