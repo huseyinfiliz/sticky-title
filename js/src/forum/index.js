@@ -1,9 +1,7 @@
 import { extend } from 'flarum/common/extend';
 import Page from 'flarum/common/components/Page';
 import Link from 'flarum/common/components/Link';
-import PostStreamScrubber from 'flarum/forum/components/PostStreamScrubber';
 import DiscussionPage from 'flarum/forum/components/DiscussionPage';
-import PostStream from 'flarum/forum/components/PostStream';
 
 app.initializers.add('huseyinfiliz-sticky-title', () => {
   const updateScrubberTitle = (element, discussion) => {
@@ -124,7 +122,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       }, 100);
     };
 
-    extend(PostStream.prototype, 'oncreate', function () {
+    extend('flarum/forum/components/PostStream', 'oncreate', function () {
       const blogHeaderEnabled = app.forum?.attribute?.('stickyTitleBlogHeader') ?? true;
 
       if (blogHeaderEnabled && app.current?.get?.('routeName')?.startsWith('blogArticle')) {
@@ -134,7 +132,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       }
     });
 
-    extend(PostStream.prototype, 'onupdate', function () {
+    extend('flarum/forum/components/PostStream', 'onupdate', function () {
       const blogHeaderEnabled = app.forum?.attribute?.('stickyTitleBlogHeader') ?? true;
 
       if (blogHeaderEnabled && app.current?.get?.('routeName')?.startsWith('blogArticle')) {
@@ -142,7 +140,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       }
     });
 
-    extend(PostStream.prototype, 'onremove', function () {
+    extend('flarum/forum/components/PostStream', 'onremove', function () {
       cleanupStickyTitle();
       cleanupPageTitle();
     });
@@ -167,7 +165,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
   let lastScrollTop = 0;
   let scrollHandler = null;
 
-  extend(PostStreamScrubber.prototype, 'oninit', function (vnode) {
+  extend('flarum/forum/components/PostStreamScrubber', 'oninit', function (vnode) {
     this.showingTitle = false;
     const discussion = this.attrs.stream.discussion;
     if (discussion && this.lastDiscussionId !== discussion.id()) {
@@ -177,7 +175,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     }
   });
 
-  extend(PostStreamScrubber.prototype, 'view', function (vnode) {
+  extend('flarum/forum/components/PostStreamScrubber', 'view', function (vnode) {
     if (window.innerWidth > 767) return;
     const mobileScrollDirection = app.forum.attribute('stickyTitleMobileScroll');
     if (mobileScrollDirection === 'never' || !this.attrs.stream.discussion) return;
@@ -186,7 +184,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     }
   });
 
-  extend(PostStreamScrubber.prototype, 'oncreate', function (vnode) {
+  extend('flarum/forum/components/PostStreamScrubber', 'oncreate', function (vnode) {
     if (window.innerWidth <= 767) {
       const mobileScrollDirection = app.forum.attribute('stickyTitleMobileScroll');
       if (mobileScrollDirection !== 'never') {
@@ -236,7 +234,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     updateScrubberTitle(this.element, this.attrs.stream.discussion);
   });
 
-  extend(PostStreamScrubber.prototype, 'onupdate', function (vnode) {
+  extend('flarum/forum/components/PostStreamScrubber', 'onupdate', function (vnode) {
     if (window.innerWidth <= 767) {
       const discussion = this.attrs.stream.discussion;
       if (discussion) {
@@ -250,7 +248,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     updateScrubberTitle(this.element, this.attrs.stream.discussion);
   });
 
-  extend(PostStreamScrubber.prototype, 'onremove', function () {
+  extend('flarum/forum/components/PostStreamScrubber', 'onremove', function () {
     if (this.scrollHandler) {
       window.removeEventListener('scroll', this.scrollHandler);
       this.scrollHandler = null;
