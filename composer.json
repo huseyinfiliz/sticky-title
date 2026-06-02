@@ -29,11 +29,6 @@
         "source": "https://github.com/huseyinfiliz/sticky-title",
         "docs": "https://github.com/huseyinfiliz/sticky-title/README.md"
     },
-    "autoload": {
-        "psr-4": {
-            "HuseyinFiliz\\StickyTitle\\": "src/"
-        }
-    },
     "extra": {
         "flarum-extension": {
             "title": "Sticky Title",
