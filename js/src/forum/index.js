@@ -9,8 +9,8 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
   const updateScrubberTitle = (element, discussion) => {
     const replaceOriginal = app.forum.attribute('stickyTitleScrubberReplace');
     const isMobile = window.innerWidth <= 767;
-    const shouldReplace = (replaceOriginal === 'both') || (replaceOriginal === 'mobile' && isMobile) || (replaceOriginal === 'desktop' && !isMobile);
-    
+    const shouldReplace = replaceOriginal === 'both' || (replaceOriginal === 'mobile' && isMobile) || (replaceOriginal === 'desktop' && !isMobile);
+
     if (shouldReplace && discussion) {
       const scrubberFirst = element.querySelector('.Scrubber-first');
       if (scrubberFirst && !scrubberFirst.querySelector('.ScrubberTitle')) {
@@ -32,9 +32,9 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
   if (window.innerWidth <= 767) {
     const addTitleToHeader = (discussion) => {
       if (!discussion) return;
-    
+
       const blogTitleText = discussion.title();
-      
+
       if (blogTitleText) {
         const titleControlButton = document.querySelector('.App-titleControl .Dropdown-toggle');
         if (!titleControlButton) return;
@@ -62,7 +62,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
 
         titleElement.appendChild(titleSpan);
         titleElement.appendChild(sortIcon);
-        
+
         titleControlButton.prepend(titleElement);
       }
     };
@@ -96,22 +96,22 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
 
     const addPageTitle = () => {
       cleanupPageTitle();
-      
+
       const fofPagesEnabled = app.forum?.attribute?.('stickyTitleFofPagesHeader') ?? true;
-      
+
       if (!fofPagesEnabled) return;
-      
+
       if (!isFofPage()) return;
-      
+
       setTimeout(() => {
         const pageTitle = document.querySelector('.PageHero-title, h1.PageHero-title, .Page-title');
         const appNavigation = document.querySelector('#app-navigation .Navigation');
-        
+
         if (pageTitle && appNavigation && !appNavigation.querySelector('.PageTitle')) {
           const titleElement = document.createElement('div');
           titleElement.className = 'PageTitle Navigation-title';
           titleElement.textContent = pageTitle.textContent.trim();
-          
+
           const backButton = appNavigation.querySelector('.Navigation-back');
           if (backButton && backButton.nextSibling) {
             backButton.parentNode.insertBefore(titleElement, backButton.nextSibling);
@@ -126,7 +126,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
 
     extend(PostStream.prototype, 'oncreate', function () {
       const blogHeaderEnabled = app.forum?.attribute?.('stickyTitleBlogHeader') ?? true;
-      
+
       if (blogHeaderEnabled && app.current?.get?.('routeName')?.startsWith('blogArticle')) {
         addTitleToHeader(this.attrs.discussion);
       } else {
@@ -136,7 +136,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
 
     extend(PostStream.prototype, 'onupdate', function () {
       const blogHeaderEnabled = app.forum?.attribute?.('stickyTitleBlogHeader') ?? true;
-      
+
       if (blogHeaderEnabled && app.current?.get?.('routeName')?.startsWith('blogArticle')) {
         addTitleToHeader(this.attrs.discussion);
       }
@@ -196,15 +196,15 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
           if (button && !button.querySelector('.MobileStickyTitle')) {
             const originalContentSpan = document.createElement('span');
             originalContentSpan.className = 'MobileOriginalContent';
-            
+
             while (button.firstChild) {
               originalContentSpan.appendChild(button.firstChild);
             }
-            
+
             const titleSpan = document.createElement('span');
             titleSpan.className = 'MobileStickyTitle';
             titleSpan.textContent = discussion.title();
-            
+
             button.appendChild(originalContentSpan);
             button.appendChild(titleSpan);
           }
@@ -214,7 +214,12 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
             const scrollDirection = scrollTop > lastScrollTop ? 'down' : 'up';
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
             let shouldShowTitle = false;
-            if ((mobileScrollDirection === 'always' || (mobileScrollDirection === 'scroll_down' && scrollDirection === 'down') || (mobileScrollDirection === 'scroll_up' && scrollDirection === 'up')) && scrollTop > 100) {
+            if (
+              (mobileScrollDirection === 'always' ||
+                (mobileScrollDirection === 'scroll_down' && scrollDirection === 'down') ||
+                (mobileScrollDirection === 'scroll_up' && scrollDirection === 'up')) &&
+              scrollTop > 100
+            ) {
               shouldShowTitle = true;
             }
             if (this.showingTitle !== shouldShowTitle) {
@@ -258,16 +263,17 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     const discussion = this.discussion;
     if (!discussion) return;
 
-    const scrollToFirst = () => this.stream && this.stream.goToFirst(); 
+    const scrollToFirst = () => this.stream && this.stream.goToFirst();
     const tagColorStyle = app.forum.attribute('stickyTitleTagColorStyle') || 'background';
 
     const recipientUsers = discussion.recipientUsers?.() || null;
     const recipientGroups = discussion.recipientGroups?.() || null;
     const isByobuDiscussion = (recipientUsers && recipientUsers.length > 0) || (recipientGroups && recipientGroups.length > 0);
-    
+
     const tags = discussion.tags?.() || null;
 
-    items.add('sticky-title',
+    items.add(
+      'sticky-title',
       m('.StickyTitlePanel', [
         m('.StickyTitlePanel-container', { onclick: scrollToFirst, style: 'cursor: pointer;' }, [
           m('.StickyTitlePanel-header', [m('.StickyTitlePanel-label', discussion.title())]),
@@ -275,11 +281,12 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
             isByobuDiscussion
               ? m('.StickyTitlePanel-recipients', [
                   recipientUsers && recipientUsers.length > 0
-                    ? m('.StickyTitlePanel-users', 
-                        recipientUsers.map(user => {
+                    ? m(
+                        '.StickyTitlePanel-users',
+                        recipientUsers.map((user) => {
                           const baseColor = '#3498db';
                           let styleString = '';
-                          
+
                           if (tagColorStyle === 'background') {
                             styleString = `background-color: ${baseColor}; color: #fff; border: none;`;
                           } else if (tagColorStyle === 'text') {
@@ -287,26 +294,28 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                           } else if (tagColorStyle === 'border') {
                             styleString = `border: 2px solid ${baseColor}; color: var(--text-color); background-color: transparent;`;
                           }
-                          
-                          return m(Link, { 
-                            key: user.id(),
-                            href: app.route('user', { username: user.username() }),
-                            className: 'RecipientLabel RecipientLabel--user',
-                            style: styleString,
-                            onclick: (e) => e.stopPropagation()
-                          }, [
-                            m('i.fas.fa-user.RecipientLabel-icon'),
-                            m('span.RecipientLabel-text', user.displayName())
-                          ]);
+
+                          return m(
+                            Link,
+                            {
+                              key: user.id(),
+                              href: app.route('user', { username: user.username() }),
+                              className: 'RecipientLabel RecipientLabel--user',
+                              style: styleString,
+                              onclick: (e) => e.stopPropagation(),
+                            },
+                            [m('i.fas.fa-user.RecipientLabel-icon'), m('span.RecipientLabel-text', user.displayName())]
+                          );
                         })
                       )
                     : null,
                   recipientGroups && recipientGroups.length > 0
-                    ? m('.StickyTitlePanel-groups',
-                        recipientGroups.map(group => {
+                    ? m(
+                        '.StickyTitlePanel-groups',
+                        recipientGroups.map((group) => {
                           const baseColor = '#9b59b6';
                           let styleString = '';
-                          
+
                           if (tagColorStyle === 'background') {
                             styleString = `background-color: ${baseColor}; color: #fff; border: none;`;
                           } else if (tagColorStyle === 'text') {
@@ -314,21 +323,24 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                           } else if (tagColorStyle === 'border') {
                             styleString = `border: 2px solid ${baseColor}; color: var(--text-color); background-color: transparent;`;
                           }
-                          
-                          return m('span.RecipientLabel.RecipientLabel--group', {
-                            key: group.id(),
-                            style: styleString
-                          }, [
-                            m('i.fas.fa-users.RecipientLabel-icon'),
-                            m('span.RecipientLabel-text', group.namePlural())
-                          ]);
+
+                          return m(
+                            'span.RecipientLabel.RecipientLabel--group',
+                            {
+                              key: group.id(),
+                              style: styleString,
+                            },
+                            [m('i.fas.fa-users.RecipientLabel-icon'), m('span.RecipientLabel-text', group.namePlural())]
+                          );
                         })
                       )
-                    : null
+                    : null,
                 ])
               : tags && tags.length > 0
-                ? m('.StickyTitlePanel-tags', { className: `tag-style-${tagColorStyle}` },
-                    tags.map(tag => {
+                ? m(
+                    '.StickyTitlePanel-tags',
+                    { className: `tag-style-${tagColorStyle}` },
+                    tags.map((tag) => {
                       let styleString = '';
                       const className = ['TagLabel', tag.isChild() && 'TagLabel--child'].filter(Boolean);
                       const color = tag.color() || '#888';
@@ -339,25 +351,27 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                       } else if (tagColorStyle === 'border') {
                         styleString = `border: 2px solid ${color}; color: var(--text-color); background-color: transparent;`;
                       }
-                      
-                      return m(Link, { 
-                        href: app.route('tag', { tags: tag.slug() }),
-                        style: styleString, 
-                        className: className.join(' '),
-                        onclick: (e) => e.stopPropagation()
-                      }, [
-                        tag.icon() && m('span.TagLabel-icon', m('i', { className: tag.icon() })),
-                        m('span.TagLabel-text', tag.name())
-                      ]);
+
+                      return m(
+                        Link,
+                        {
+                          href: app.route('tag', { tags: tag.slug() }),
+                          style: styleString,
+                          className: className.join(' '),
+                          onclick: (e) => e.stopPropagation(),
+                        },
+                        [tag.icon() && m('span.TagLabel-icon', m('i', { className: tag.icon() })), m('span.TagLabel-text', tag.name())]
+                      );
                     })
                   )
                 : m('.StickyTitlePanel-meta', [
                     m('span.StickyTitlePanel-arrow', m('i.fas.fa-arrow-up')),
-                    m('span', app.translator.trans('core.forum.post_scrubber.original_post_link'))
-                  ])
-          ])
-        ])
-      ]), 1
+                    m('span', app.translator.trans('core.forum.post_scrubber.original_post_link')),
+                  ]),
+          ]),
+        ]),
+      ]),
+      1
     );
   });
 });

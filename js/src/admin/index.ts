@@ -1,4 +1,4 @@
-app.initializers.add('huseyinfiliz/sticky-title', function() {
+app.initializers.add('huseyinfiliz/sticky-title', function () {
   app.extensionData
     .for('huseyinfiliz-sticky-title')
     .registerSetting({
@@ -10,8 +10,8 @@ app.initializers.add('huseyinfiliz/sticky-title', function() {
         always: 'Always Show',
         scroll_down: 'Show When Scrolling Down',
         scroll_up: 'Show When Scrolling Up',
-        never: 'Never Show'
-      }
+        never: 'Never Show',
+      },
     })
     .registerSetting({
       setting: 'huseyinfiliz-sticky-title.scrubber_replace_original',
@@ -22,14 +22,14 @@ app.initializers.add('huseyinfiliz/sticky-title', function() {
         never: 'Never Replace',
         mobile: 'Mobile Only',
         desktop: 'Desktop Only',
-        both: 'Both Mobile & Desktop'
-      }
+        both: 'Both Mobile & Desktop',
+      },
     })
     .registerSetting({
       setting: 'huseyinfiliz-sticky-title.web_scrubber_title',
       type: 'boolean',
       label: 'Show Title Above Scrubber',
-      help: 'Displays the discussion title above the scrubber on desktop'
+      help: 'Displays the discussion title above the scrubber on desktop',
     })
     .registerSetting({
       setting: 'huseyinfiliz-sticky-title.tag_color_style',
@@ -39,19 +39,19 @@ app.initializers.add('huseyinfiliz/sticky-title', function() {
       options: {
         background: 'Background Color (Default)',
         text: 'Text Color Only',
-        border: 'Border Color Only'
-      }
+        border: 'Border Color Only',
+      },
     })
     .registerSetting({
       setting: 'huseyinfiliz-sticky-title.fof_pages_header',
       type: 'boolean',
       label: 'Show Page Title in Mobile Header',
-      help: 'Displays the page title in mobile header when viewing FoF Pages'
+      help: 'Displays the page title in mobile header when viewing FoF Pages',
     })
     .registerSetting({
       setting: 'huseyinfiliz-sticky-title.blog_header',
       type: 'boolean',
       label: 'Show Blog Title in Mobile Header',
-      help: 'Displays the blog article title in mobile header when viewing blog posts'
+      help: 'Displays the blog article title in mobile header when viewing blog posts',
     });
 });
