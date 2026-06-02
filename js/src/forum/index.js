@@ -187,7 +187,8 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
           const button = this.element.querySelector('.Dropdown-toggle');
           if (button && !button.querySelector('.MobileStickyTitle')) {
             const originalHTML = button.innerHTML;
-            button.innerHTML = `<span class="MobileOriginalContent">${originalHTML}</span><span class="MobileStickyTitle">${discussion.title()}</span>`;
+            button.innerHTML = `<span class="MobileOriginalContent">${originalHTML}</span><span class="MobileStickyTitle"></span>`;
+            button.querySelector('.MobileStickyTitle').textContent = discussion.title();
           }
           if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
           scrollHandler = () => {
