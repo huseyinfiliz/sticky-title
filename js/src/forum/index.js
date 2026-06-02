@@ -6,7 +6,6 @@ import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PostStream from 'flarum/forum/components/PostStream';
 
 app.initializers.add('huseyinfiliz-sticky-title', () => {
-  // Scrubber başlık değiştirme mantığı (DRY)
   const updateScrubberTitle = (element, discussion) => {
     const replaceOriginal = app.forum.attribute('stickyTitleScrubberReplace');
     const isMobile = window.innerWidth <= 767;
@@ -259,7 +258,7 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     const discussion = this.discussion;
     if (!discussion) return;
 
-    const scrollToFirst = () => this.stream && this.stream.goToNumber(1);
+    const scrollToFirst = () => this.stream && this.stream.goToFirst(); 
     const tagColorStyle = app.forum.attribute('stickyTitleTagColorStyle') || 'background';
 
     const recipientUsers = discussion.recipientUsers?.() || null;
@@ -341,7 +340,6 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                         styleString = `border: 2px solid ${color}; color: var(--text-color); background-color: transparent;`;
                       }
                       
-                      // Düzeltilen kısım: Rota parametresi 'slug' yerine 'tags' olarak güncellendi
                       return m(Link, { 
                         href: app.route('tag', { tags: tag.slug() }),
                         style: styleString, 
