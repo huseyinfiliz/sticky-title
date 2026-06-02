@@ -1,6 +1,4 @@
 app.initializers.add('huseyinfiliz/sticky-title', function() {
-  console.log('[huseyinfiliz/sticky-title] Admin panel loaded');
-  
   app.extensionData
     .for('huseyinfiliz-sticky-title')
     .registerSetting({

@@ -1,10 +1,34 @@
 import { extend } from 'flarum/common/extend';
+import Page from 'flarum/common/components/Page';
+import Link from 'flarum/common/components/Link';
 import PostStreamScrubber from 'flarum/forum/components/PostStreamScrubber';
 import DiscussionPage from 'flarum/forum/components/DiscussionPage';
 import PostStream from 'flarum/forum/components/PostStream';
 
 app.initializers.add('huseyinfiliz-sticky-title', () => {
-  console.log('[huseyinfiliz/sticky-title] Forum loaded');
+  // Scrubber başlık değiştirme mantığı (DRY)
+  const updateScrubberTitle = (element, discussion) => {
+    const replaceOriginal = app.forum.attribute('stickyTitleScrubberReplace');
+    const isMobile = window.innerWidth <= 767;
+    const shouldReplace = (replaceOriginal === 'both') || (replaceOriginal === 'mobile' && isMobile) || (replaceOriginal === 'desktop' && !isMobile);
+    
+    if (shouldReplace && discussion) {
+      const scrubberFirst = element.querySelector('.Scrubber-first');
+      if (scrubberFirst && !scrubberFirst.querySelector('.ScrubberTitle')) {
+        const icon = scrubberFirst.querySelector('i');
+        scrubberFirst.innerHTML = '';
+        if (icon) {
+          scrubberFirst.appendChild(icon.cloneNode(true));
+          scrubberFirst.appendChild(document.createTextNode(' '));
+        }
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'ScrubberTitle';
+        titleSpan.textContent = discussion.title();
+        titleSpan.title = discussion.title();
+        scrubberFirst.appendChild(titleSpan);
+      }
+    }
+  };
 
   if (window.innerWidth <= 767) {
     const addTitleToHeader = (discussion) => {
@@ -21,7 +45,11 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
         if (originalLabel) originalLabel.style.display = 'none';
         if (originalCaret) originalCaret.style.display = 'none';
 
-        if (titleControlButton.querySelector('.PageTitle-container')) return;
+        const existingTitleText = titleControlButton.querySelector('.PageTitle-text');
+        if (existingTitleText) {
+          existingTitleText.textContent = blogTitleText.trim();
+          return;
+        }
 
         const titleElement = document.createElement('div');
         titleElement.className = 'PageTitle-container';
@@ -64,7 +92,6 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
 
     const isFofPage = () => {
       const currentRoute = app.current?.get?.('routeName');
-      // 'page' route'unu kontrol et (FoF Pages için)
       return currentRoute === 'page' || currentRoute?.startsWith('page.');
     };
 
@@ -106,19 +133,13 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       } else {
         cleanupStickyTitle();
       }
-      
-      // FoF Pages desteği
-      if (isFofPage()) {
-        addPageTitle();
-      } else {
-        cleanupPageTitle();
-      }
     });
 
     extend(PostStream.prototype, 'onupdate', function () {
-      // Route değişikliklerini yakalamak için onupdate kullan
-      if (isFofPage()) {
-        addPageTitle();
+      const blogHeaderEnabled = app.forum?.attribute?.('stickyTitleBlogHeader') ?? true;
+      
+      if (blogHeaderEnabled && app.current?.get?.('routeName')?.startsWith('blogArticle')) {
+        addTitleToHeader(this.attrs.discussion);
       }
     });
 
@@ -127,33 +148,21 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       cleanupPageTitle();
     });
 
-    // İlk yükleme için
-    setTimeout(() => {
+    extend(Page.prototype, 'oncreate', function () {
       if (isFofPage()) {
         addPageTitle();
+      } else {
+        cleanupPageTitle();
       }
-    }, 100);
+    });
 
-    // Route değişikliklerini dinle
-    let lastRoute = app.current?.get?.('routeName');
-    
-    const checkRouteChange = () => {
-      const currentRoute = app.current?.get?.('routeName');
-      
-      if (currentRoute !== lastRoute) {
-        lastRoute = currentRoute;
-        
-        if (isFofPage()) {
-          addPageTitle();
-        } else {
-          cleanupPageTitle();
-        }
+    extend(Page.prototype, 'onupdate', function () {
+      if (isFofPage()) {
+        addPageTitle();
+      } else {
+        cleanupPageTitle();
       }
-      
-      requestAnimationFrame(checkRouteChange);
-    };
-    
-    checkRouteChange();
+    });
   }
 
   let lastScrollTop = 0;
@@ -186,9 +195,19 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
         if (discussion) {
           const button = this.element.querySelector('.Dropdown-toggle');
           if (button && !button.querySelector('.MobileStickyTitle')) {
-            const originalHTML = button.innerHTML;
-            button.innerHTML = `<span class="MobileOriginalContent">${originalHTML}</span><span class="MobileStickyTitle"></span>`;
-            button.querySelector('.MobileStickyTitle').textContent = discussion.title();
+            const originalContentSpan = document.createElement('span');
+            originalContentSpan.className = 'MobileOriginalContent';
+            
+            while (button.firstChild) {
+              originalContentSpan.appendChild(button.firstChild);
+            }
+            
+            const titleSpan = document.createElement('span');
+            titleSpan.className = 'MobileStickyTitle';
+            titleSpan.textContent = discussion.title();
+            
+            button.appendChild(originalContentSpan);
+            button.appendChild(titleSpan);
           }
           if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
           scrollHandler = () => {
@@ -210,53 +229,21 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
       }
     }
 
-    const replaceOriginal = app.forum.attribute('stickyTitleScrubberReplace');
-    const isMobile = window.innerWidth <= 767;
-    let shouldReplace = (replaceOriginal === 'both') || (replaceOriginal === 'mobile' && isMobile) || (replaceOriginal === 'desktop' && !isMobile);
-    if (shouldReplace) {
-      const discussion = this.attrs.stream.discussion;
-      if (discussion) {
-        const scrubberFirst = this.element.querySelector('.Scrubber-first');
-        if (scrubberFirst) {
-          const icon = scrubberFirst.querySelector('i');
-          scrubberFirst.innerHTML = '';
-          if (icon) {
-            scrubberFirst.appendChild(icon.cloneNode(true));
-            scrubberFirst.appendChild(document.createTextNode(' '));
-          }
-          const titleSpan = document.createElement('span');
-          titleSpan.className = 'ScrubberTitle';
-          titleSpan.textContent = discussion.title();
-          titleSpan.title = discussion.title();
-          scrubberFirst.appendChild(titleSpan);
-        }
-      }
-    }
+    updateScrubberTitle(this.element, this.attrs.stream.discussion);
   });
 
   extend(PostStreamScrubber.prototype, 'onupdate', function (vnode) {
-    const replaceOriginal = app.forum.attribute('stickyTitleScrubberReplace');
-    const isMobile = window.innerWidth <= 767;
-    let shouldReplace = (replaceOriginal === 'both') || (replaceOriginal === 'mobile' && isMobile) || (replaceOriginal === 'desktop' && !isMobile);
-    if (shouldReplace) {
+    if (window.innerWidth <= 767) {
       const discussion = this.attrs.stream.discussion;
       if (discussion) {
-        const scrubberFirst = this.element.querySelector('.Scrubber-first');
-        if (scrubberFirst && !scrubberFirst.querySelector('.ScrubberTitle')) {
-          const icon = scrubberFirst.querySelector('i');
-          scrubberFirst.innerHTML = '';
-          if (icon) {
-            scrubberFirst.appendChild(icon.cloneNode(true));
-            scrubberFirst.appendChild(document.createTextNode(' '));
-          }
-          const titleSpan = document.createElement('span');
-          titleSpan.className = 'ScrubberTitle';
+        const titleSpan = this.element.querySelector('.MobileStickyTitle');
+        if (titleSpan && titleSpan.textContent !== discussion.title()) {
           titleSpan.textContent = discussion.title();
-          titleSpan.title = discussion.title();
-          scrubberFirst.appendChild(titleSpan);
         }
       }
     }
+
+    updateScrubberTitle(this.element, this.attrs.stream.discussion);
   });
 
   extend(PostStreamScrubber.prototype, 'onremove', function () {
@@ -275,12 +262,10 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
     const scrollToFirst = () => this.stream && this.stream.goToNumber(1);
     const tagColorStyle = app.forum.attribute('stickyTitleTagColorStyle') || 'background';
 
-    // FoF Byobu kontrolü
     const recipientUsers = discussion.recipientUsers?.() || null;
     const recipientGroups = discussion.recipientGroups?.() || null;
     const isByobuDiscussion = (recipientUsers && recipientUsers.length > 0) || (recipientGroups && recipientGroups.length > 0);
     
-    // Normal tartışmalar için tags
     const tags = discussion.tags?.() || null;
 
     items.add('sticky-title',
@@ -304,9 +289,12 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                             styleString = `border: 2px solid ${baseColor}; color: var(--text-color); background-color: transparent;`;
                           }
                           
-                          return m('span.RecipientLabel.RecipientLabel--user', { 
+                          return m(Link, { 
                             key: user.id(),
-                            style: styleString
+                            href: app.route('user', { username: user.username() }),
+                            className: 'RecipientLabel RecipientLabel--user',
+                            style: styleString,
+                            onclick: (e) => e.stopPropagation()
                           }, [
                             m('i.fas.fa-user.RecipientLabel-icon'),
                             m('span.RecipientLabel-text', user.displayName())
@@ -352,7 +340,14 @@ app.initializers.add('huseyinfiliz-sticky-title', () => {
                       } else if (tagColorStyle === 'border') {
                         styleString = `border: 2px solid ${color}; color: var(--text-color); background-color: transparent;`;
                       }
-                      return m('span.TagLabel', { style: styleString, className: className.join(' ') }, [
+                      
+                      // Düzeltilen kısım: Rota parametresi 'slug' yerine 'tags' olarak güncellendi
+                      return m(Link, { 
+                        href: app.route('tag', { tags: tag.slug() }),
+                        style: styleString, 
+                        className: className.join(' '),
+                        onclick: (e) => e.stopPropagation()
+                      }, [
                         tag.icon() && m('span.TagLabel-icon', m('i', { className: tag.icon() })),
                         m('span.TagLabel-text', tag.name())
                       ]);
